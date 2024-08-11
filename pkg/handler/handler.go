@@ -2,16 +2,22 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vpnvsk/amunet_auth_microservices"
 	"github.com/vpnvsk/amunet_auth_microservices/pkg/service"
+	"log/slog"
 )
 
 type Handler struct {
-	service *service.Service
+	log      *slog.Logger
+	settings *amunet_auth_microservices.Config
+	service  *service.Service
 }
 
-func NewHandler(service *service.Service) *Handler {
+func NewHandler(log *slog.Logger, service *service.Service, setting *amunet_auth_microservices.Config) *Handler {
 	return &Handler{
-		service: service,
+		log:      log,
+		service:  service,
+		settings: setting,
 	}
 }
 
@@ -21,7 +27,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		auth := api.Group("/auth")
 		{
-			auth.POST("/sign-up", h.T)
+			auth.POST("/sign-up", h.SignUp)
 		}
 	}
 	return router

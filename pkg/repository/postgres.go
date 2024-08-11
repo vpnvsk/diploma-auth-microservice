@@ -1,10 +1,20 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/vpnvsk/amunet_auth_microservices"
 	"time"
+)
+
+const (
+	userTable = "user"
+)
+
+var (
+	ErrUserExists   = errors.New("user already exists")
+	ErrUserNotFound = errors.New("user not found")
 )
 
 func NewPostgresDb(cfg *amunet_auth_microservices.Config) (*sqlx.DB, error) {

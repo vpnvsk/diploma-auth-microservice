@@ -4,15 +4,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/vpnvsk/amunet_auth_microservices/internal/models"
+	"log/slog"
 )
 
 type UserDB struct {
-	db *sqlx.DB
+	db  *sqlx.DB
+	log *slog.Logger
 }
 
-func NewUserDB(db *sqlx.DB) *UserDB {
+func NewUserDB(log *slog.Logger, db *sqlx.DB) *UserDB {
 	return &UserDB{
-		db: db,
+		log: log,
+		db:  db,
 	}
 }
 
