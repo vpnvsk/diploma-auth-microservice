@@ -12,8 +12,11 @@ type User interface {
 }
 
 type Auth interface {
-	SignUp(email, username, authMethod string, passwordHash []byte) (uuid.UUID, error)
+	SignUp(tx *sqlx.Tx, email, username, authMethod string, passwordHash []byte) (uuid.UUID, error)
 	LogIn(email string) (models.UserGet, error)
+	UpdateRefreshToken(userId uuid.UUID, refreshToken []byte) error
+	UpdateRefreshTokenTransaction(tx *sqlx.Tx, userId uuid.UUID, refreshToken []byte) error
+	Transactional(txFunc func(tx *sqlx.Tx) error) error
 }
 
 type Repository struct {
