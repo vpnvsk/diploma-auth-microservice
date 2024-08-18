@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
@@ -61,4 +62,31 @@ func (a *AuthService) generateToken(userId uuid.UUID, tokenTTL time.Duration, se
 		userId,
 	})
 	return token.SignedString([]byte(secret))
+}
+
+func (a *AuthService) LogIn(email, password string) (string, string, error) {
+	op := "service.auth.LogIn"
+	log := a.log.With(slog.String("op", op))
+	user, err := a.repo.LogIn(email)
+	if err != nil {
+		log.Error("failed to find user", err)
+		return "", "", fmt.Errorf("%s: %w", op, err)
+	}
+	if err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password)); err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			log.Error("wrong password")
+			return "", "", errors.New("bad credentials")
+		}
+	}
+	accessToken, err := a.generateToken(user.Id, time.Duration(a.settings.AccessTTL), a.settings.AccessSecret)
+	if err != nil {
+		log.Error("failed to generate access token", err)
+		return "", "", fmt.Errorf("%s: %w", op, err)
+	}
+	refreshToken, err := a.generateToken(user.Id, time.Duration(a.settings.RefreshTTL), a.settings.RefreshSecret)
+	if err != nil {
+		log.Error("failed to generate access token", err)
+		return "", "", fmt.Errorf("%s: %w", op, err)
+	}
+	return accessToken, refreshToken, nil
 }

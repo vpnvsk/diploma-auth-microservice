@@ -13,7 +13,7 @@ type User interface {
 
 type Auth interface {
 	SignUp(email, username, authMethod string, passwordHash []byte) (uuid.UUID, error)
-	LogIn(email string) (models.User, error)
+	LogIn(email string) (models.UserGet, error)
 }
 
 type Repository struct {

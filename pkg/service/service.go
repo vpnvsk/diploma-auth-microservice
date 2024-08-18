@@ -14,6 +14,7 @@ type User interface {
 
 type Auth interface {
 	SignUp(email, username, authMethod, password string) (string, string, error)
+	LogIn(email, password string) (string, string, error)
 }
 
 type Service struct {

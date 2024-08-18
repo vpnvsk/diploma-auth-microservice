@@ -41,6 +41,16 @@ func (a *AuthDB) SignUp(email, username, authMethod string, passwordHash []byte)
 	return id, nil
 }
 
-func (a *AuthDB) LogIn(email string) (models.User, error) {
-	return models.User{}, nil
+func (a *AuthDB) LogIn(email string) (models.UserGet, error) {
+	op := "repository.LogIn"
+	var user models.UserGet
+	log := a.log.With(slog.String("op", op))
+
+	query := fmt.Sprintf(`SELECT id, email, password_hash FROM "%s" WHERE email=$1`, userTable)
+	if err := a.db.Get(&user, query, email); err != nil {
+		log.Info("user not found", err)
+		return user, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return user, nil
 }
