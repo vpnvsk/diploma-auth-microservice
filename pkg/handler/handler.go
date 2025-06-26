@@ -23,14 +23,13 @@ func NewHandler(log *slog.Logger, service *service.Service, setting *amunet_auth
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
-	api := router.Group("/api")
+
+	auth := router.Group("/auth")
 	{
-		auth := api.Group("/auth")
-		{
-			auth.POST("/sign-up", h.SignUp)
-			auth.POST("/log-in", h.LogIn)
-		}
+		auth.POST("/signup", h.SignUp)
+		auth.POST("/login", h.LogIn)
 	}
+
 	return router
 }
 

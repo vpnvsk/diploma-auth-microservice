@@ -1,16 +1,36 @@
 version: '3.8'
 
 services:
-  db:
+  auth_db:
     image: postgres:14
     volumes:
       - postgres_data:/var/lib/postgresql@14/data/
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: database
+    networks:
+      - patents-net
+
+  auth:
+    build: ./
+    container_name: auth
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env
+    depends_on:
+      - auth_db
+    networks:
+      - patents-net
+    restart: on-failure
 
 volumes:
   postgres_data:
+
+
+networks:
+  patents-net:
+    external: true

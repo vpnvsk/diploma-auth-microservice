@@ -26,7 +26,7 @@ func main() {
 	handler := handler_.NewHandler(log, service, settings)
 	srv := new(amunet_auth_microservices.Server)
 	go func() {
-		if err := srv.Run("8080", handler.InitRoutes()); err != nil {
+		if err := srv.Run("9000", handler.InitRoutes()); err != nil {
 			errorMessage := fmt.Sprintf("error while running server %s", err.Error())
 			panic(errorMessage)
 		}

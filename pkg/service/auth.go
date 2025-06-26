@@ -57,8 +57,8 @@ func (a *AuthService) SignUp(email, username, authMethod, password string) (stri
 			log.Error("failed to save user", err)
 			return fmt.Errorf("%s: %w", op, err)
 		}
-
-		accessToken, err = a.generateToken(id, time.Duration(a.settings.AccessTTL), a.settings.AccessSecret)
+		accessTTL := time.Duration(a.settings.AccessTTL) * time.Second
+		accessToken, err = a.generateToken(id, accessTTL, a.settings.AccessSecret)
 		if err != nil {
 			log.Error("failed to generate access token", err)
 			return fmt.Errorf("%s: %w", op, err)
@@ -121,7 +121,9 @@ func (a *AuthService) LogIn(email, password string) (string, string, error) {
 			return "", "", errors.New("bad credentials")
 		}
 	}
-	accessToken, err := a.generateToken(user.Id, time.Duration(a.settings.AccessTTL), a.settings.AccessSecret)
+	accessTTL := time.Duration(a.settings.AccessTTL) * time.Second
+
+	accessToken, err := a.generateToken(user.Id, accessTTL, a.settings.AccessSecret)
 	if err != nil {
 		log.Error("failed to generate access token", err)
 		return "", "", fmt.Errorf("%s: %w", op, err)
